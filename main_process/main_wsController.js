@@ -39,7 +39,7 @@ const wsController = {
       console.log("Reqresssss====>", reqResObj);
       this.wsConnect = connection;
       reqResObj.connection = "open";
-      testingController.runTest(reqResObj.request.testContent, reqResObj);
+
       const openConnectionObj = {
         connection,
         protocol: "WS",
@@ -113,7 +113,10 @@ const wsController = {
             data: e.utf8Data,
             timeReceived: Date.now(),
           });
-
+          reqResObj.response.connection = 'open';
+          console.log('reqrezzTestContent=>>>>', reqResObj)
+      //!!!!note to catsnake team, the reqResObj.request.testContent is undefined
+      reqResObj.response.testResult = testingController.runTest(reqResObj.request.testContent, reqResObj);
       //update store
       event.sender.send("reqResUpdate", reqResObj);
     });

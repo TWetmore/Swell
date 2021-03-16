@@ -149,6 +149,13 @@ export const saveCurrentResponseData = (dataObj, callingFunc) => ({
   callingFunc,
 });
 
+//WS Connection Data
+
+export const sendWSConnectionData = (dataObj) => ({
+  type : types.SEND_WS_CONNECTION_DATA,
+  payload: dataObj,
+}) 
+
 // UI ACTIONS
 
 export const setComposerDisplay = (composerDisplay) => ({

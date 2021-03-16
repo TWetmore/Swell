@@ -60,9 +60,14 @@ const initialState = {
   dataPoints: {},
   currentResponse: {
     request: {
-      network: "",
+      network: "", 
     },
   },
+  wsTests: {
+    messages: [],
+    connectionTime: [],
+    history : true,
+  }
 };
 
 const businessReducer = (state = initialState, action) => {
@@ -73,6 +78,25 @@ const businessReducer = (state = initialState, action) => {
         history: action.payload,
       };
     }
+
+    case types.SEND_WS_CONNECTION_DATA: {
+      console.log('in store with', action.payload)
+      let val = {
+        recievedMessage : action.payload.received,
+        sentMessage : action.payload.sent,
+        connectionTime : action.payload.delay,
+        history : action.payload.equal} 
+      if (val.recievedMessage !== undefined) {
+      return {
+        ...state,
+        wsTests: {
+          messages: [val, ...state.wsTests.messages],
+          connectionTime : [...state.wsTests.connectionTime, val.connectionTime]
+          },
+      }
+    }
+  }
+  
 
     case types.DELETE_HISTORY: {
       const deleteId = action.payload.id;

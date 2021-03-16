@@ -1,16 +1,45 @@
 /* eslint-disable no-param-reassign */
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import PropTypes, { string } from "prop-types";
 import { useSelector, useDispatch } from 'react-redux';
 import WebSocketMessage from "./WebSocketMessage";
 import { WebSocketWindowProps } from "../../../types"
 import * as actions from "../../../../src/client/actions/actions.js";
+import * as store from "../../store";
+
 const { api } = window;
 
 const WebSocketWindow :React.SFC<WebSocketWindowProps> = ({ content, outgoingMessages, incomingMessages, connection }) => {
 
+
   const [inputMessage, setInputMessage] = useState('');
+
   const [showWarning, setShowWarning] =useState(false)
+
+  const [wSConnectionData, setWSConnectionData] = useState({});
+
+  //sends the WS Connection Data to state
+  async function sendWSConnectionData() {
+    if (incomingMessages.length !== 0){
+      let msgSent = outgoingMessages[outgoingMessages.length - 1];
+      let msgRec =incomingMessages[incomingMessages.length - 1];
+      let obj = {
+      received : msgRec.data,
+      sent : msgRec.data,
+      delay : (msgRec.timeReceived - msgSent.timeReceived),
+      equal : msgRec.data === msgRec.data};
+
+      setWSConnectionData(obj);
+      console.log('wSConnectionData===>', wSConnectionData)
+      await store.default.dispatch(actions.sendWSConnectionData(wSConnectionData));
+      setWSConnectionData({})
+    }
+  }
+
+  useEffect(() => {
+    sendWSConnectionData()
+    
+  }, [incomingMessages]);
 
   //updates the outgoing message when it changes
   const updateOutgoingMessage = (value: any) => {
@@ -20,8 +49,7 @@ const WebSocketWindow :React.SFC<WebSocketWindowProps> = ({ content, outgoingMes
   //sends to WScontroller in main.js to send the message to server
   const sendToWSController = () =>  {
     api.send("send-ws", content, inputMessage);
-    //reset inputbox
-    // setInputMessage('');
+    setInputMessage('');
   }
 
   const onFileChange = async (event:any)=>{
@@ -55,19 +83,19 @@ const WebSocketWindow :React.SFC<WebSocketWindowProps> = ({ content, outgoingMes
   const handleKeyPress = (event: {key: string}) => {
     if (event.key === "Enter") {
       sendToWSController();
+
     }
   }
   //maps the messages to view in chronological order and by whom - self/server
   const combinedMessagesReactArr = outgoingMessages
       .map((message) => {
         message.source = "client";
-        
+
         return message;
       })
       .concat(
         incomingMessages.map((message) => {
           message.source = "server";
-          
           return message;
         })
       )
@@ -97,17 +125,6 @@ const WebSocketWindow :React.SFC<WebSocketWindowProps> = ({ content, outgoingMes
     const exportChatLog = (event:any) => {
       api.send("exportChatLog", outgoingMessages, incomingMessages
       
-      
-      // outgoingMessages.map((message) => {message.source = "client";return message;})
-      // .concat(incomingMessages.map((message) => {message.source = "server";return message;}))
-      // .sort((a, b) => a.timeReceived - b.timeReceived)
-      // .map((message, index) => (
-      //     {key:index,
-      //     index:index,
-      //     source:message.source,
-      //     data:message.data,
-      //     timeReceived:message.timeReceived}
-      // ))
       );
     }
 

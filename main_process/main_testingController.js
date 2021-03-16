@@ -9,6 +9,7 @@ testHttpController.runTest = (
   protocolData,
   isGraphQL = false
 ) => {
+  console.log('in testing controller')
   const { request } = reqResObj;
   let { response } = reqResObj;
   console.log("res======>", response);
@@ -39,9 +40,11 @@ testHttpController.runTest = (
   // the regex matches all 'assert' or 'expect' on seperate lines
   // it will also match all variables
   // eslint-disable-next-line no-useless-escape
+  console.log('inputScript=====>', inputScript)
+  if (inputScript){
   const testRegex = /(((const|let|var)\s+\w*\s*=\s*(\'[^\']*\'|\"[^\"]*\"|\w*[^\s\;]*))|(expect|assert)[^;\n]*\([^;\n]*\)[\w\.]*)/gm;
   const separatedScriptsArray = inputScript.match(testRegex) ?? [];
-
+  
   // create an array of test scripts that will be executed in Node VM instance
   const arrOfTestScripts = separatedScriptsArray.map((script) => {
     // construct and return the individual test script
@@ -88,6 +91,7 @@ testHttpController.runTest = (
     vm.run(testScript, "main.js");
     // deep clone the testResults array since sending functions, DOM elements, and non-cloneable
     // JS objects is not supported IPC channels past Electron 9
+    console.log('testresults=====>', testResults)
     return JSON.parse(JSON.stringify(testResults));
   } catch (err) {
     console.log(
@@ -97,6 +101,7 @@ testHttpController.runTest = (
     // return a null object in the event of an error
     return null;
   }
+}
 };
 
 module.exports = testHttpController;

@@ -18,6 +18,7 @@ const httpController = {
 
   openHTTPconnection(event, reqResObj) {
     console.log("event=>", event);
+    console.log('reqrezzTestContent=>>>>', reqResObj)
     // HTTP2 currently only on HTTPS
     if (reqResObj.protocol === "https://") {
       httpController.establishHTTP2Connection(event, reqResObj);

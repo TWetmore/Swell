@@ -2,11 +2,14 @@ import React from 'react'
 import { Doughnut } from "react-chartjs-2";
 import TestResult from './TestResult'
 
+
 export default function SingleTestContainer({ currentResponse }) {
   const {
     request,
     response
   } = currentResponse;
+
+  console.log('test result=====>', response)
 
   const { url } = currentResponse;
 
